@@ -1,21 +1,102 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+//Redux
+import { Provider } from "react-redux";
+import store from "./src/redux/store";
+
+//Firebase
+import { auth } from "./src/firebase/config";
+
+//Screens
+import editDetails from "./src/pages/editDetails";
+import friendRequests from "./src/pages/friendRequests";
+import friends from "./src/pages/friends";
+import loginScreen from "./src/pages/login";
+import match from "./src/pages/match";
+import profile from "./src/pages/profile";
+import signupScreen from "./src/pages/signup/signup";
+import phone from "./src/pages/signup/phone";
+import location from "./src/pages/signup/location";
+import socialMedia from "./src/pages/signup/socialMedia";
+import userDetails from "./src/pages/signup/userDetails";
+import { LogBox } from "react-native";
+
+//TODO ignoring warning
+LogBox.ignoreLogs(["Setting a timer"]);
+
+const AuthStack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const HomeStack = createStackNavigator();
+const ProfileStack = createStackNavigator();
+const FriendsStack = createStackNavigator();
+
+const Home = () => {
+  return (
+    <HomeStack.Navigator initialRouteName="Home">
+      <HomeStack.Screen name="Home" component={match} />
+    </HomeStack.Navigator>
+  );
+};
+
+const Profile = () => {
+  return (
+    <ProfileStack.Navigator initialRouteName="Profile">
+      <ProfileStack.Screen name="Profile" component={profile} />
+      <ProfileStack.Screen name="Edit" component={editDetails} />
+    </ProfileStack.Navigator>
+  );
+};
+
+const Friends = () => {
+  return (
+    <FriendsStack.Navigator initialRouteName="Friends">
+      <FriendsStack.Screen name="Friends" component={friends} />
+      <FriendsStack.Screen name="FriendRequests" component={friendRequests} />
+    </FriendsStack.Navigator>
+  );
+};
+
+const Auth = () => {
+  return (
+    //TODO initial route name login
+    <AuthStack.Navigator initialRouteName="Phone">
+      <AuthStack.Screen name="Login" component={loginScreen} />
+      <AuthStack.Screen name="Signup" component={signupScreen} />
+      <AuthStack.Screen name="Phone" component={phone} />
+      <AuthStack.Screen name="Location" component={location} />
+      <AuthStack.Screen name="SocialMedia" component={socialMedia} />
+      <AuthStack.Screen name="UserDetails" component={userDetails} />
+    </AuthStack.Navigator>
+  );
+};
+
+const getRoute = () => {
+  let isSignedIn = false;
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      isSignedIn = true;
+      AsyncStorage.setItem("uid", user.uid);
+    } else isSignedIn = false;
+  });
+  return isSignedIn ? (
+    <Tab.Navigator initialRouteName="Home">
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Friends" component={Friends} />
+    </Tab.Navigator>
+  ) : (
+    <Auth />
+  );
+};
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <NavigationContainer>{getRoute()}</NavigationContainer>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
