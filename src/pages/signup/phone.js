@@ -7,24 +7,54 @@ import { validatePhone, checkOTP } from "../../redux/actions/userActions";
 const phone = (props) => {
   const [phone, setPhone] = useState("");
   const [OTP, setOTP] = useState("");
-  const [validatePhoneAttempts, setValidatePhoneAttempts] = useState(0);
-  const [validateOTPAttempt] = useState(false);
-  const [error, setError] = useState(null);
-  const errors = props.errors;
+  const [phoneAttempts, setPhoneAttempts] = useState(0);
+  const [OTPAttempts, setOTPAttempts] = useState(0);
+  const [sentOTP, setSentOTP] = useState(false);
+  const [phoneError, setPhoneError] = useState(null);
+  const [OTPError, setOTPError] = useState(null);
 
-  const handleSend = () => {
-    if (validatePhoneAttempts > 3) return;
-    if (phone === "") return;
-
-    props.validatePhone(phone);
-    setValidatePhoneAttempts(validatePhoneAttempts + 1);
-    setPhone("");
+  const handleSend = async () => {
+    if (phoneAttempts > 3) {
+      setPhoneError("Too many attempts please try later");
+      return;
+    }
+    if (phone === "") {
+      setPhoneError("Please enter a valid number");
+      return;
+    }
+    await props.validatePhone(phone);
+    if (props.validatedPhone) {
+      setPhoneError(null);
+      setPhoneAttempts(0);
+      setSentOTP(true);
+    } else {
+      setPhoneAttempts(phoneAttempts + 1);
+      setPhone("");
+      setPhoneError(props.errors.phone);
+    }
   };
 
-  const handleCheck = () => {
-    if (validateOTPAttempt === true) return;
-    if (phone === "" || OTP === "") props.checkOTP(phone, OTP);
-    setOTP("");
+  const handleCheck = async () => {
+    if (OTPAttempts > 3) {
+      setOTPError("Too many attempts, please try again later");
+      return;
+    }
+    if (phone === "" || OTP === "") {
+      setOTPError("Please enter valid phone and OTP");
+      return;
+    }
+    if (!sentOTP) {
+      setOTPError("Please send One Time Password first");
+      return;
+    }
+    await props.checkOTP(phone, OTP);
+    if (!errors) {
+      props.navigation.navigate("Location");
+    } else {
+      setOTP("");
+      setOTPError(props.errors.OTP);
+      setOTPAttempts(OTPAttempts + 1)
+    }
   };
 
   return (
@@ -37,8 +67,8 @@ const phone = (props) => {
           keyboardType="number-pad"
         />
       </View>
-      {errors && errors.phone ? (
-        <Text style={styles.errorMessage}>{errors.phone}</Text>
+      {phoneError ? (
+        <Text style={styles.errorMessage}>{phoneError}</Text>
       ) : null}
       <Button title="Send One-Time Password" onPress={handleSend} />
       <Text>One-Time Password</Text>
@@ -49,9 +79,7 @@ const phone = (props) => {
           keyboardType="number-pad"
         />
       </View>
-      {errors && errors.OTP ? (
-        <Text style={styles.errorMessage}>{errors.OTP}</Text>
-      ) : null}
+      {OTPError ? <Text style={styles.errorMessage}>{OTPError}</Text> : null}
       <Button title="Check" onPress={handleCheck} />
     </View>
   );
@@ -59,6 +87,7 @@ const phone = (props) => {
 
 const mapStateToProps = (state) => ({
   errors: state.user.errors,
+  validatedPhone: state.user.phone,
 });
 
 const mapDispatchToProps = {

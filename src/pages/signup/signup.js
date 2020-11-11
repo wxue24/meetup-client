@@ -11,13 +11,13 @@ const signupScreen = (props) => {
 
   const handleSubmit = async ({ email, password, confirmPassword, handle }) => {
     setLoading(true);
-    await props.signup(email, password, confirmPassword, handle);
+    const auth = await props.signup(email, password, confirmPassword, handle);
     setLoading(false);
-    if (props.authenticated) {
+    if (auth) {
       props.navigation.navigate("Phone");
     }
   };
-
+ 
   return (
     <View>
       <LoginForm

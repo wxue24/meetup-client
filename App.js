@@ -1,17 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Redux
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import store from "./src/redux/store";
 
 //Firebase
 import { auth } from "./src/firebase/config";
 
 //Screens
+import resolveAuthScreen from "./src/pages/resolveAuth";
 import editDetails from "./src/pages/editDetails";
 import friendRequests from "./src/pages/friendRequests";
 import friends from "./src/pages/friends";
@@ -63,7 +64,8 @@ const Friends = () => {
 const Auth = () => {
   return (
     //TODO initial route name login
-    <AuthStack.Navigator initialRouteName="Phone">
+    <AuthStack.Navigator initialRouteName="Resolve Auth">
+      <AuthStack.Screen name="Resolve Auth" component={resolveAuthScreen} />
       <AuthStack.Screen name="Login" component={loginScreen} />
       <AuthStack.Screen name="Signup" component={signupScreen} />
       <AuthStack.Screen name="Phone" component={phone} />
@@ -74,29 +76,26 @@ const Auth = () => {
   );
 };
 
-const getRoute = () => {
-  let isSignedIn = false;
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      isSignedIn = true;
-      AsyncStorage.setItem("uid", user.uid);
-    } else isSignedIn = false;
-  });
-  return isSignedIn ? (
+const Main = () => {
+  return (
     <Tab.Navigator initialRouteName="Home">
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" component={Profile} />
       <Tab.Screen name="Friends" component={Friends} />
     </Tab.Navigator>
-  ) : (
-    <Auth />
   );
 };
 
 export default function App() {
+  // const auth = useSelector((state) => state.user.authenticated);
+  // console.log(auth);
   return (
     <Provider store={store}>
-      <NavigationContainer>{getRoute()}</NavigationContainer>
+      <NavigationContainer>
+        {/* {auth && <Main />}
+        {!auth && <Auth />} */}
+        <Auth />
+      </NavigationContainer>
     </Provider>
   );
 }

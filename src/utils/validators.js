@@ -27,3 +27,18 @@ export const validateSignup = (email, password, confirmPassword, handle) => {
     valid: Object.keys(errors).length > 0 ? false : true,
   };
 };
+
+export const validateLogin = (email, password) => {
+  let errors = {};
+  if (isEmpty(email)) {
+    errors.email = "Email must not be empty";
+  } else if (!isEmail(email)) {
+    errors.email = "Must be a valid email address";
+  }
+  if (isEmpty(password)) errors.password = "Password must not be empty";
+
+  return {
+    errors,
+    valid: Object.keys(errors).length > 0 ? false : true,
+  };
+};

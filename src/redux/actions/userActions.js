@@ -8,11 +8,20 @@ import {
   SET_ERRORS,
   ADD_USER_DATA,
 } from "../types";
-import { validateSignup } from "../../utils/validators";
+import { validateSignup, validateLogin } from "../../utils/validators";
+
+export const tryLocalLogin = () => async (dispatch) => {
+  let uid = await AsyncStorage.getItem("uid");
+  if (uid) {
+    dispatch({ type: ADD_USER_DATA, payload: { uid } });
+    dispatch({ type: SET_AUTHENTICATED });
+  }
+};
 
 export const signup = (email, password, confirmPassword, handle) => async (
   dispatch
 ) => {
+  dispatch({ type: CLEAR_ERRORS });
   const { errors, valid } = validateSignup(
     email,
     password,
@@ -21,11 +30,12 @@ export const signup = (email, password, confirmPassword, handle) => async (
   );
   if (!valid) dispatch({ type: SET_ERRORS, payload: errors });
   else {
-    let uid = await AsyncStorage.getItem("uid");
-
-    auth
+    let uid;
+    return auth
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
+        uid = auth.currentUser.uid;
+        AsyncStorage.setItem("uid", uid);
         return db.doc(`/users/${uid}`).get();
       })
       .then((doc) => {
@@ -45,18 +55,41 @@ export const signup = (email, password, confirmPassword, handle) => async (
             .then(() => {
               dispatch({ type: CLEAR_ERRORS });
               dispatch({ type: SET_AUTHENTICATED });
+              return true;
             });
         }
       })
       .catch((err) => {
         console.log(err.message);
         // TODO handle different errors
-        dispatch({ type: SET_ERRORS, payload: { generalError: err.message } });
+        dispatch({ type: SET_ERRORS, payload: { general: err.message } });
+        return false;
       });
   }
 };
 
-export const login = ({ email, password }) => (dispatch) => {};
+export const login = (email, password) => async (dispatch) => {
+  dispatch({ type: CLEAR_ERRORS });
+  const { errors, valid } = validateLogin(email, password);
+  if (!valid) dispatch({ type: SET_ERRORS, payload: errors });
+  else {
+    let uid;
+    return auth
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        uid = auth.currentUser.uid;
+        AsyncStorage.setItem("uid", uid);
+        dispatch({ type: SET_AUTHENTICATED });
+        dispatch({ type: CLEAR_ERRORS });
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch({ type: SET_ERRORS, payload: { general: err.message } });
+        return false;
+      });
+  }
+};
 
 export const switchAuthScreen = () => (dispatch) => {
   dispatch({ type: CLEAR_ERRORS });

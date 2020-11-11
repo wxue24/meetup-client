@@ -71,8 +71,8 @@ const LoginForm = ({
           ) : null}
         </>
       ) : null}
-      {errors && errors.generalError ? (
-        <Text style={styles.errorMessage}>{errors.generalError}</Text>
+      {errors && errors.general ? (
+        <Text style={styles.errorMessage}>{errors.general}</Text>
       ) : null}
       <Button
         title={submitButtonText}
