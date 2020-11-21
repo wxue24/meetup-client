@@ -11,11 +11,8 @@ const loginScreen = (props) => {
 
   const handleSubmit = async ({ email, password }) => {
     setLoading(true);
-    const auth = await props.login(email, password);
+    await props.login(email, password);
     setLoading(false);
-    if (auth) {
-      props.navigation.navigate("Phone");
-    }
   };
 
   return (

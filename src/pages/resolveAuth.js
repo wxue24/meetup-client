@@ -1,22 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { tryLocalLogin } from "../redux/actions/userActions";
-import { ActivityIndicator } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, connect } from "react-redux";
+import Loading from "../components/Loading";
 
 const resolveAuth = (props) => {
+  const auth = useSelector((state) => state.user.authenticated);
+  const [authChanged, setAuthChanged] = useState(0);
+
   useEffect(() => {
-    tryLocalLogin();
+    props.tryLocalLogin();
   }, []);
 
-  const auth = useSelector((state) => state.user.authenticated);
-
   useEffect(() => {
-    if (!auth) {
-      props.navigation.navigate("Login");
+    if (authChanged == 0) {
+      setAuthChanged(authChanged + 1);
+    } else {
+      if (!auth) {
+        props.navigation.navigate("Login");
+      }
     }
   }, [auth]);
 
-  return <ActivityIndicator animating={true} />;
+  return <Loading animating={true} />;
 };
 
-export default resolveAuth;
+const mapDispatchToProps = {
+  tryLocalLogin,
+};
+
+export default connect(null, mapDispatchToProps)(resolveAuth);

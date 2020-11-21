@@ -86,16 +86,17 @@ const Main = () => {
   );
 };
 
+const AppContainer = () => {
+  const auth = useSelector((state) => state.user.authenticated);
+  return (
+    <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
+  );
+};
+
 export default function App() {
-  // const auth = useSelector((state) => state.user.authenticated);
-  // console.log(auth);
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        {/* {auth && <Main />}
-        {!auth && <Auth />} */}
-        <Auth />
-      </NavigationContainer>
+      <AppContainer />
     </Provider>
   );
 }

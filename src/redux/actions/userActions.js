@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import geohash from "ngeohash";
 
 import { db, auth } from "../../firebase/config";
 import {
@@ -10,12 +11,26 @@ import {
 } from "../types";
 import { validateSignup, validateLogin } from "../../utils/validators";
 
+let uid;
+
 export const tryLocalLogin = () => async (dispatch) => {
-  let uid = await AsyncStorage.getItem("uid");
-  if (uid) {
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      const email = await AsyncStorage.getItem("email");
+      const password = await AsyncStorage.getItem("password");
+      return auth.signInWithEmailAndPassword(email, password).catch((err) => {
+        console.log(err.message);
+      });
+    }
+    uid = await AsyncStorage.getItem("uid");
+    if (!uid) uid = user.uid;
     dispatch({ type: ADD_USER_DATA, payload: { uid } });
     dispatch({ type: SET_AUTHENTICATED });
-  }
+  });
+};
+
+export const setErrors = (errors) => (dispatch) => {
+  dispatch({ type: SET_ERRORS, payload: errors });
 };
 
 export const signup = (email, password, confirmPassword, handle) => async (
@@ -30,12 +45,14 @@ export const signup = (email, password, confirmPassword, handle) => async (
   );
   if (!valid) dispatch({ type: SET_ERRORS, payload: errors });
   else {
-    let uid;
+    uid;
     return auth
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
         uid = auth.currentUser.uid;
         AsyncStorage.setItem("uid", uid);
+        AsyncStorage.setItem("email", email);
+        AsyncStorage.setItem("password", password);
         return db.doc(`/users/${uid}`).get();
       })
       .then((doc) => {
@@ -73,12 +90,14 @@ export const login = (email, password) => async (dispatch) => {
   const { errors, valid } = validateLogin(email, password);
   if (!valid) dispatch({ type: SET_ERRORS, payload: errors });
   else {
-    let uid;
+    uid;
     return auth
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         uid = auth.currentUser.uid;
         AsyncStorage.setItem("uid", uid);
+        AsyncStorage.setItem("email", email);
+        AsyncStorage.setItem("password", password);
         dispatch({ type: SET_AUTHENTICATED });
         dispatch({ type: CLEAR_ERRORS });
         return true;
@@ -122,7 +141,7 @@ export const validatePhone = (phone) => async (dispatch) => {
 export const checkOTP = (phone, OTP) => async (dispatch) => {
   let errors;
   const token = auth.currentUser.getIdToken();
-  let uid = await AsyncStorage.getItem("uid");
+  uid = await AsyncStorage.getItem("uid");
 
   await axios({
     method: "post",
@@ -146,5 +165,24 @@ export const checkOTP = (phone, OTP) => async (dispatch) => {
     dispatch({
       type: SET_ERRORS,
       payload: { OTP: "One-Time Password is not valid" },
+    });
+};
+
+// Adds geohash and coordinates to firestore
+export const addLocation = (latitude, longitude) => async (dispatch) => {
+  const hash = geohash.encode(latitude, longitude);
+  db.doc(`/private/${uid}`)
+    .update({
+      latitude,
+      longitude,
+      geohash: hash,
+    })
+    .then(() => {
+      console.log("success");
+      dispatch({ type: CLEAR_ERRORS });
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch({ type: SET_ERRORS, payload: { location: err.message } });
     });
 };
