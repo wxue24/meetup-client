@@ -11,22 +11,27 @@ import {
 } from "../types";
 import { validateSignup, validateLogin } from "../../utils/validators";
 
-let uid;
+let uid = "";
 
 export const tryLocalLogin = () => async (dispatch) => {
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      const email = await AsyncStorage.getItem("email");
-      const password = await AsyncStorage.getItem("password");
-      return auth.signInWithEmailAndPassword(email, password).catch((err) => {
-        console.log(err.message);
+  let user = auth.currentUser;
+  if (!user) {
+    let email, password;
+    try {
+      email = await AsyncStorage.getItem("email");
+      password = await AsyncStorage.getItem("password");
+      auth.signInWithEmailAndPassword(email, password).catch((err) => {
+        console.log("Local login failed", err.message);
+        return;
       });
+    } catch {
+      console.log("Email and password not saved locally");
     }
-    uid = await AsyncStorage.getItem("uid");
-    if (!uid) uid = user.uid;
-    dispatch({ type: ADD_USER_DATA, payload: { uid } });
-    dispatch({ type: SET_AUTHENTICATED });
-  });
+  }
+  uid = await AsyncStorage.getItem("uid");
+  if (!uid) uid = user.uid;
+  dispatch({ type: ADD_USER_DATA, payload: { uid } });
+  dispatch({ type: SET_AUTHENTICATED });
 };
 
 export const setErrors = (errors) => (dispatch) => {
@@ -171,18 +176,24 @@ export const checkOTP = (phone, OTP) => async (dispatch) => {
 // Adds geohash and coordinates to firestore
 export const addLocation = (latitude, longitude) => async (dispatch) => {
   const hash = geohash.encode(latitude, longitude);
-  db.doc(`/private/${uid}`)
-    .update({
-      latitude,
-      longitude,
-      geohash: hash,
-    })
+  return db.collection("private")
+    .doc(uid)
+    .set(
+      {
+        latitude,
+        longitude,
+        geohash: hash,
+      },
+      { merge: true }
+    )
     .then(() => {
-      console.log("success");
+      console.log("Successfully added location to database");
       dispatch({ type: CLEAR_ERRORS });
+      return true
     })
     .catch((err) => {
       console.log(err);
       dispatch({ type: SET_ERRORS, payload: { location: err.message } });
+      return false
     });
 };
