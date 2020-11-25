@@ -8,30 +8,36 @@ import {
   SET_AUTHENTICATED,
   SET_ERRORS,
   ADD_USER_DATA,
+  SET_UNAUTHENTICATED,
 } from "../types";
 import { validateSignup, validateLogin } from "../../utils/validators";
 
 let uid = "";
 
 export const tryLocalLogin = () => async (dispatch) => {
-  let user = auth.currentUser;
-  if (!user) {
-    let email, password;
-    try {
-      email = await AsyncStorage.getItem("email");
-      password = await AsyncStorage.getItem("password");
-      auth.signInWithEmailAndPassword(email, password).catch((err) => {
-        console.log("Local login failed", err.message);
-        return;
-      });
-    } catch {
-      console.log("Email and password not saved locally");
-    }
-  }
+  let email = await AsyncStorage.getItem("email");
+  let password = await AsyncStorage.getItem("password");
   uid = await AsyncStorage.getItem("uid");
-  if (!uid) uid = user.uid;
-  dispatch({ type: ADD_USER_DATA, payload: { uid } });
-  dispatch({ type: SET_AUTHENTICATED });
+  let user = auth.currentUser;
+  if (user && !uid) {
+    uid = user.uid;
+    dispatch({ type: ADD_USER_DATA, payload: { uid } });
+    dispatch({ type: SET_AUTHENTICATED });
+  } else if (!user && email && password) {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        uid = auth.currentUser.uid;
+        dispatch({ type: ADD_USER_DATA, payload: { uid } });
+        dispatch({ type: SET_AUTHENTICATED });
+      })
+      .catch((err) => {
+        console.log("Local login failed", err.message);
+      });
+  } else {
+    console.log("Email and password not saved locally");
+    dispatch({type: SET_UNAUTHENTICATED})
+  }
 };
 
 export const setErrors = (errors) => (dispatch) => {
@@ -176,7 +182,8 @@ export const checkOTP = (phone, OTP) => async (dispatch) => {
 // Adds geohash and coordinates to firestore
 export const addLocation = (latitude, longitude) => async (dispatch) => {
   const hash = geohash.encode(latitude, longitude);
-  return db.collection("private")
+  return db
+    .collection("private")
     .doc(uid)
     .set(
       {
@@ -189,11 +196,11 @@ export const addLocation = (latitude, longitude) => async (dispatch) => {
     .then(() => {
       console.log("Successfully added location to database");
       dispatch({ type: CLEAR_ERRORS });
-      return true
+      return true;
     })
     .catch((err) => {
       console.log(err);
       dispatch({ type: SET_ERRORS, payload: { location: err.message } });
-      return false
+      return false;
     });
 };
