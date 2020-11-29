@@ -34,9 +34,19 @@ export const tryLocalLogin = () => async (dispatch) => {
       .catch((err) => {
         console.log("Local login failed", err.message);
       });
+  } else if (!email && !password) {
+    // TODO: temporary login if AsyncStorage not found
+    auth
+      .signInWithEmailAndPassword("new1@email.com", "password")
+      .then(() => {
+        uid = auth.currentUser.uid;
+        dispatch({ type: SET_AUTHENTICATED });
+        dispatch({ type: ADD_USER_DATA, payload: { uid } });
+      })
+      .catch((err) => console.log(err.message));
   } else {
     console.log("Email and password not saved locally");
-    dispatch({type: SET_UNAUTHENTICATED})
+    dispatch({ type: SET_UNAUTHENTICATED });
   }
 };
 
@@ -151,7 +161,7 @@ export const validatePhone = (phone) => async (dispatch) => {
 
 export const checkOTP = (phone, OTP) => async (dispatch) => {
   let errors;
-  const token = auth.currentUser.getIdToken();
+  const token = await auth.currentUser.getIdToken();
   uid = await AsyncStorage.getItem("uid");
 
   await axios({
@@ -202,5 +212,54 @@ export const addLocation = (latitude, longitude) => async (dispatch) => {
       console.log(err);
       dispatch({ type: SET_ERRORS, payload: { location: err.message } });
       return false;
+    });
+};
+
+export const getInstagramHandle = (authCode) => async (dispatch) => {
+  const token = await auth.currentUser.getIdToken();
+  uid = auth.currentUser.uid
+  axios({
+    method: "post",
+    url: "https://us-central1-meetup-462d1.cloudfunctions.net/api/instagram",
+    data: { code: authCode },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => {
+      const handle = res.data.handle;
+      console.log("Successfully retrieved username");
+      dispatch({
+        type: ADD_USER_DATA,
+        payload: { socialMediaHandles: { instagram: handle } },
+      });
+      dispatch({ type: CLEAR_ERRORS });
+    })
+    .catch((err) => {
+      console.log("Couldn't get username");
+      console.log(err);
+      dispatch({ type: SET_ERRORS, payload: { instagram: err.message } });
+    });
+};
+
+export const addInstagramHandle = (handle) => async (dispatch) => {
+  uid = auth.currentUser.uid;
+  db.collection("users")
+    .doc(uid)
+    .set(
+      {
+        socialMediaHandles: {
+          instagram: handle,
+        },
+      },
+      { merge: true }
+    )
+    .then(() => {
+      console.log("Successfully added username to database");
+      dispatch({ type: CLEAR_ERRORS });
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch({ type: SET_ERRORS, payload: { instagram: err.message } });
     });
 };
