@@ -25,7 +25,7 @@ let db = {
       read: "true | false",
       createdAt: "2019-03-15T10:59:52.798Z",
     },
-  ],
+  ], 
   private: [
     // Doc id is uid
     {

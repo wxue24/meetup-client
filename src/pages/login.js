@@ -5,6 +5,7 @@ import LoginForm from "../components/LoginForm";
 import NavLink from "../components/NavLink";
 import Loading from "../components/Loading";
 import { connect } from "react-redux";
+import { NavigationContainer } from "@react-navigation/native";
 
 const loginScreen = (props) => {
   const [loading, setLoading] = useState(false);

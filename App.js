@@ -2,14 +2,10 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Redux
 import { Provider, useSelector } from "react-redux";
 import store from "./src/redux/store";
-
-//Firebase
-import { auth } from "./src/firebase/config";
 
 //Screens
 import resolveAuthScreen from "./src/pages/resolveAuth";
@@ -64,14 +60,14 @@ const Friends = () => {
 const Auth = () => {
   return (
     //TODO initial route name login
-    <AuthStack.Navigator initialRouteName="Resolve Auth">
+    <AuthStack.Navigator initialRouteName="Social Media">
       <AuthStack.Screen name="Resolve Auth" component={resolveAuthScreen} />
       <AuthStack.Screen name="Login" component={loginScreen} />
       <AuthStack.Screen name="Signup" component={signupScreen} />
       <AuthStack.Screen name="Phone" component={phone} />
       <AuthStack.Screen name="Location" component={location} />
-      <AuthStack.Screen name="SocialMedia" component={socialMedia} />
-      <AuthStack.Screen name="UserDetails" component={userDetails} />
+      <AuthStack.Screen name="Social Media" component={socialMedia} />
+      <AuthStack.Screen name="User Details" component={userDetails} />
     </AuthStack.Navigator>
   );
 };
@@ -87,9 +83,13 @@ const Main = () => {
 };
 
 const AppContainer = () => {
+  //TODO: This could be causing use to hit login button twice
   const auth = useSelector((state) => state.user.authenticated);
   return (
-    <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
+    // <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
+    <NavigationContainer>
+      <Auth />
+    </NavigationContainer>
   );
 };
 

@@ -10,18 +10,18 @@ import {
 } from "../types";
 
 const initialState = {
-  authenticated: false,
   loading: false,
   errors: {},
   notifications: [],
   filterSettings: {},
+  friendRequests: [],
+  friends: [],
   firstName: "",
-  grade: "",
-  handle: "",
+  grade: null,
   interests: [],
   school: "",
   location: {},
-  socialMediaHandles: [],
+  socialMediaHandles: {},
 };
 
 export default function (state = initialState, action) {
@@ -38,7 +38,11 @@ export default function (state = initialState, action) {
         authenticated: true,
       };
     case SET_UNAUTHENTICATED:
-      return initialState;
+      return {
+        ...state,
+        loading: false,
+        authenticated: false,
+      };
     case SET_ERRORS:
       return {
         ...state,

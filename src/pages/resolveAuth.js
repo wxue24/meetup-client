@@ -15,9 +15,10 @@ const resolveAuth = (props) => {
     if (authChanged == 0) {
       setAuthChanged(authChanged + 1);
     } else {
-      if (!auth) {
-        props.navigation.navigate("Login");
-      }
+      // TODO: if !auth, navigate to Login
+      // if (!auth) {
+      props.navigation.navigate("Social Media");
+      // }
     }
   }, [auth]);
 

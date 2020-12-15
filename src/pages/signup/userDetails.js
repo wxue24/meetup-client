@@ -1,10 +1,12 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React from "react";
+import { View, Text } from "react-native";
 
-export default function userDetails() {
-    return (
-        <View>
-            <Text>User Details</Text>
-        </View>
-    )
-}
+const userDetailsScreen = () => {
+  return (
+    <View>
+      <Text>User Details</Text>
+    </View>
+  );
+};
+
+export default userDetailsScreen;

@@ -5,7 +5,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "test": "jest"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.13.2",
@@ -16,13 +17,18 @@
     "axios": "^0.21.0",
     "eslint": "^7.12.1",
     "expo": "~39.0.2",
+    "expo-auth-session": "~2.0.0",
+    "expo-constants": "~9.2.0",
     "expo-font": "~8.3.0",
+    "expo-location": "~9.0.0",
     "expo-status-bar": "~1.0.2",
+    "expo-web-browser": "~8.5.0",
     "firebase": "7.9.0",
     "native-base": "^2.13.14",
+    "ngeohash": "^0.6.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz",
+    "react-native": "0.63.3",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.4",
@@ -34,8 +40,11 @@
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
+    "@firebase/testing": "^0.20.11",
+    "jest": "^26.6.3",
     "redux-devtools": "^3.7.0",
-    "redux-devtools-extension": "^2.13.8"
+    "redux-devtools-extension": "^2.13.8",
+    "redux-mock-store": "^1.5.4"
   },
   "private": true
 }

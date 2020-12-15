@@ -1,0 +1,15 @@
+{
+  "name": "unit",
+  "version": "1.0.0",
+  "description": "Unit testing for meetup",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha index.js --exit"
+  },
+  "author": "William Xue",
+  "license": "ISC",
+  "devDependencies": {
+    "@firebase/testing": "^0.20.11",
+    "mocha": "^8.2.1"
+  }
+}

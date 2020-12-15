@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 export default Loading = ({ animating }) => {
-  return <ActivityIndicator animating={animating} size="large" />;
+  return <ActivityIndicator animating={animating} size={96} color="#0000ff" />;
 };
