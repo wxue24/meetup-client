@@ -1,7 +1,7 @@
 let db = {
   users: [
     // Doc id is uid
-    {
+    { 
       handle: "user",
       firstName: "Tim",
       school: "Claremont High",
@@ -9,8 +9,8 @@ let db = {
       lastUpdated: "2019-03-15T10:59:52.798Z",
       interests: [
         // Limit 10 if using firebase
-        { name: "soccer", type: "sports" },
-        { name: "board games", type: "other" },
+        { name: "soccer", type: "sports", code: 101 },
+        { name: "board games", type: "other", code: 402 },
       ],
       socialMediaHandles: {
         instagram: "user123",
@@ -64,9 +64,13 @@ let db = {
         maxGrade: 12,
         minGrade: 10,
         sameSchool: "yes | any | no",
-        radius: 2, // 1,2,3,4,5 in miles
+        radius: 2, // 1,2,3,4 in miles (0 is any)
         sharedInterest: { name: "soccer", type: "sports" } | null, //specific interest or any
       },
+      notificationPreferences: {
+        newFriendRequest: true, // off, on
+        newRecommendations: true, // off, daily
+      }
     },
   ],
 };

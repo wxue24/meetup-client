@@ -1,5 +1,10 @@
 import mockStore from "../../../__mocks__/redux-mock-store";
-import { validatePhone, checkOTP, getInstagramHandle } from "./userActions";
+import {
+  validatePhone,
+  checkOTP,
+  getInstagramHandle,
+} from "./userActions";
+import { auth } from "../../firebase/config";
 
 const initialState = {
   loading: false,
@@ -16,7 +21,7 @@ const initialState = {
   socialMediaHandles: {},
 };
 
-describe("signup flow actions", () => {
+describe("OTP actions", () => {
   let store;
 
   beforeEach(() => {
@@ -65,6 +70,14 @@ describe("signup flow actions", () => {
   //     });
   //   });
   // });
+});
+
+describe("Instagram auth actions", () => {
+  let store;
+
+  beforeEach(() => {
+    store = mockStore(initialState);
+  });
 
   // it("doesn't get instagram handle", async () => {
   //   // expired code
@@ -90,3 +103,18 @@ describe("signup flow actions", () => {
   //   });
   // });
 });
+
+// describe("Firebase actions", () => {
+
+//   beforeAll(() => {
+//     // Add auth.login() to firebase config
+//   });
+
+//   test("user merges data to private doc", async () => {
+    
+//   });
+
+//   test("user merges data to public doc", async() => {
+
+//   })
+// });

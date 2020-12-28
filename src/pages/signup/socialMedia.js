@@ -50,12 +50,9 @@ const socialMediaScreen = (props) => {
     if (response?.type === "success") {
       //Auth code
       const { code } = response.params;
-      console.log("code : ", code);
       setLoading(true);
       getHandleWithCode(code);
       setLoading(false);
-    } else {
-      console.log("response:", response);
     }
   }, [response]);
 

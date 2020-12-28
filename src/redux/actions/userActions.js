@@ -13,6 +13,37 @@ import {
 import { validateSignup, validateLogin } from "../../utils/validators";
 
 let uid = "";
+// // *Testing code
+// if (!auth.currentUser) {
+//   auth.signInWithEmailAndPassword("new1@email.com", "password");
+//   uid = auth.currentUser.uid;
+// } else {
+//   uid = auth.currentUser.uid;
+// }
+
+// // *
+
+const updatePrivateDoc = (data) => {
+  if (!uid) uid = auth.currentUser.uid;
+  return db
+    .doc(`/private/${uid}`)
+    .set(data, { merge: true })
+    .catch((err) => {
+      console.log(err);
+      throw new Error("Can't upload to private database");
+    });
+};
+
+const updatePublicDoc = (data) => {
+  if (!uid) uid = auth.currentUser.uid;
+  return db
+    .doc(`/users/${uid}`)
+    .set(data, { merge: true })
+    .catch((err) => {
+      console.log(err);
+      throw new Error("Can't upload to public database");
+    });
+};
 
 export const tryLocalLogin = () => async (dispatch) => {
   let email = await AsyncStorage.getItem("email");
@@ -54,6 +85,10 @@ export const setErrors = (errors) => (dispatch) => {
   dispatch({ type: SET_ERRORS, payload: errors });
 };
 
+export const setAuthenticated = () => (dispatch) => {
+  dispatch({ type: SET_AUTHENTICATED });
+};
+
 export const signup = (email, password, confirmPassword, handle) => async (
   dispatch
 ) => {
@@ -92,7 +127,7 @@ export const signup = (email, password, confirmPassword, handle) => async (
             })
             .then(() => {
               dispatch({ type: CLEAR_ERRORS });
-              dispatch({ type: SET_AUTHENTICATED });
+              // dispatch({ type: SET_AUTHENTICATED });
               return true;
             });
         }
@@ -154,30 +189,27 @@ export const validatePhone = (phone) => async (dispatch) => {
 };
 
 export const checkOTP = (phone, OTP) => async (dispatch) => {
-  const checkOTP = functions.httpsCallable("checkOTP");
+  const check = functions.httpsCallable("checkOTP");
 
-  await checkOTP({phone, OTP}).then(result => {
-    dispatch({ type: ADD_USER_DATA, payload: { phone } });
-    dispatch({ type: CLEAR_ERRORS });
-  }).catch(err => {
-    dispatch({
-      type: SET_ERRORS,
-      payload: { OTP: "One-Time Password is not valid" },
+  await check({ phone, OTP })
+    .then((result) => {
+      dispatch({ type: ADD_USER_DATA, payload: { phone } });
+      dispatch({ type: CLEAR_ERRORS });
+      updatePrivateDoc({ phone }).catch((err) =>
+        dispatch({
+          type: SET_ERRORS,
+          payload: {
+            uploadError: err.message,
+          },
+        })
+      );
+    })
+    .catch((err) => {
+      dispatch({
+        type: SET_ERRORS,
+        payload: { OTP: "One-Time Password is not valid" },
+      });
     });
-  })
-
-  // if (!errors) {
-  //   db.doc(`/private/${uid}`)
-  //     .update({ phone })
-  //     .then(() => {
-  //       dispatch({ type: ADD_USER_DATA, payload: { phone } });
-  //       dispatch({ type: CLEAR_ERRORS });
-  //     });
-  // } else
-  //   dispatch({
-  //     type: SET_ERRORS,
-  //     payload: { OTP: "One-Time Password is not valid" },
-  //   });
 };
 
 // Adds geohash and coordinates to firestore
@@ -226,23 +258,39 @@ export const getInstagramHandle = (authCode) => async (dispatch) => {
 };
 
 export const addInstagramHandle = (handle) => async (dispatch) => {
-  uid = auth.currentUser.uid;
-  db.collection("users")
-    .doc(uid)
-    .set(
-      {
-        socialMediaHandles: {
-          instagram: handle,
+  const data = {
+    socialMediaHandles: {
+      instagram: handle,
+    },
+  };
+  updatePublicDoc(data)
+    .then(() => dispatch({ type: CLEAR_ERRORS }))
+    .catch((err) =>
+      dispatch({
+        type: SET_ERRORS,
+        payload: {
+          uploadError: err.message,
         },
-      },
-      { merge: true }
-    )
+      })
+    );
+};
+
+export const setProfile = (publicData, privateData) => async (dispatch) => {
+  updatePublicDoc(publicData)
     .then(() => {
-      console.log("Successfully added username to database");
+      updatePrivateDoc(privateData);
+    })
+    .then(() => {
       dispatch({ type: CLEAR_ERRORS });
+      dispatch({ type: SET_AUTHENTICATED });
     })
     .catch((err) => {
-      console.log(err);
-      dispatch({ type: SET_ERRORS, payload: { instagram: err.message } });
+      dispatch({
+        type: SET_ERRORS,
+        payload: {
+          uploadError: err.message,
+        },
+      });
+      dispatch({ type: SET_UNAUTHENTICATED });
     });
 };

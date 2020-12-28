@@ -17,7 +17,7 @@ const resolveAuth = (props) => {
     } else {
       // TODO: if !auth, navigate to Login
       // if (!auth) {
-      props.navigation.navigate("Social Media");
+      props.navigation.navigate("User Details");
       // }
     }
   }, [auth]);
