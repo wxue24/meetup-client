@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Feather } from "@expo/vector-icons";
 
 //Redux
 import { Provider, useSelector } from "react-redux";
@@ -60,7 +61,7 @@ const Friends = () => {
 const Auth = () => {
   return (
     //TODO initial route name login
-    <AuthStack.Navigator initialRouteName="Social Media">
+    <AuthStack.Navigator initialRouteName="User Details">
       <AuthStack.Screen name="Resolve Auth" component={resolveAuthScreen} />
       <AuthStack.Screen name="Login" component={loginScreen} />
       <AuthStack.Screen name="Signup" component={signupScreen} />
@@ -74,10 +75,31 @@ const Auth = () => {
 
 const Main = () => {
   return (
-    <Tab.Navigator initialRouteName="Home">
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
+          if (route.name === "Home") iconName = "home";
+          else if (route.name === "Profile") iconName = "settings";
+          else if (route.name === "Friends") iconName = "users";
+
+          return <Feather name={iconName} size={size} color={color} />;
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: "tomato",
+        inactiveTintColor: "gray",
+        showLabel: false,
+      }}
+    >
+      <Tab.Screen
+        name="Friends"
+        component={Friends}
+        options={{ tabBarBadge: 3 }}
+      />
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" component={Profile} />
-      <Tab.Screen name="Friends" component={Friends} />
     </Tab.Navigator>
   );
 };
@@ -85,10 +107,11 @@ const Main = () => {
 const AppContainer = () => {
   //TODO: This could be causing use to hit login button twice
   const auth = useSelector((state) => state.user.authenticated);
+  // if auth===true rehydrate state
   return (
     // <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
     <NavigationContainer>
-      <Auth />
+      <Main />
     </NavigationContainer>
   );
 };
