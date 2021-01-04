@@ -60,6 +60,15 @@ const socialMediaScreen = (props) => {
     if (props.handle) setLoggedIn(true);
   }, [props.handle]);
 
+  useEffect(
+    () =>
+      props.navigation.addListener("beforeRemove", (e) => {
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+      }),
+    [props.navigation]
+  );
+
   return (
     <View style={styles.centeredView}>
       <Modal animationType="slide" transparent={true} visible={loggedIn}>

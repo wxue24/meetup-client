@@ -13,6 +13,15 @@ const phone = (props) => {
   const [phoneError, setPhoneError] = useState(null);
   const [OTPError, setOTPError] = useState(null);
 
+  useEffect(
+    () =>
+      props.navigation.addListener("beforeRemove", (e) => {
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+      }),
+    [props.navigation]
+  );
+  
   const handleSend = async () => {
     if (phoneAttempts > 3) {
       setPhoneError("Too many attempts please try later");
@@ -23,7 +32,7 @@ const phone = (props) => {
       return;
     }
     await props.validatePhone(phone);
-    if (props.validatedPhone) {
+    if (!Object.keys(props.errors).length) {
       setPhoneError(null);
       setPhoneAttempts(0);
       setSentOTP(true);
@@ -48,12 +57,12 @@ const phone = (props) => {
       return;
     }
     await props.checkOTP(phone, OTP);
-    if (!errors) {
+    if (!Object.keys(props.errors).length) {
       props.navigation.navigate("Location");
     } else {
       setOTP("");
       setOTPError(props.errors.OTP);
-      setOTPAttempts(OTPAttempts + 1)
+      setOTPAttempts(OTPAttempts + 1);
     }
   };
 

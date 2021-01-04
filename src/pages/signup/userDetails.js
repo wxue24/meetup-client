@@ -1,11 +1,21 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { setProfile, setAuthenticated } from "../../redux/actions/userActions";
 import ProfileForm from "../../components/ProfileForm";
 
+
 const userDetailsScreen = (props) => {
+
+  useEffect(
+    () =>
+      props.navigation.addListener("beforeRemove", (e) => {
+        // Prevent default behavior of leaving the screen
+      }),
+    [props.navigation]
+  );
+
   return (
     <View>
       <ProfileForm
@@ -18,7 +28,7 @@ const userDetailsScreen = (props) => {
 };
 
 const mapStateToProps = (state) => ({
-  errors: state.user.errors,
+  errors: state.user.errors
 });
 
 const mapDispatchToProps = {

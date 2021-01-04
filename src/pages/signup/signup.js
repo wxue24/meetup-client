@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { signup, switchAuthScreen } from "../../redux/actions/userActions";
 import LoginForm from "../../components/LoginForm";
 import NavLink from "../../components/NavLink";
-import Loading from "../../components/Loading"
+import Loading from "../../components/Loading";
 import { connect } from "react-redux";
 
 const signupScreen = (props) => {
@@ -11,13 +11,13 @@ const signupScreen = (props) => {
 
   const handleSubmit = async ({ email, password, confirmPassword, handle }) => {
     setLoading(true);
-    const auth = await props.signup(email, password, confirmPassword, handle);
+    await props.signup(email, password, confirmPassword, handle);
     setLoading(false);
-    if (auth) {
+    if (!Object.keys(props.errors).length) {
       props.navigation.navigate("Phone");
     }
   };
- 
+
   return (
     <View>
       <LoginForm
@@ -32,7 +32,7 @@ const signupScreen = (props) => {
         routeName="Login"
         onPress={switchAuthScreen}
       />
-      <Loading animating={loading}/>
+      <Loading animating={loading} />
     </View>
   );
 };

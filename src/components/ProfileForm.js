@@ -161,6 +161,8 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
     // console.log(errors);
   }, [errors]);
 
+  
+
   return (
     <ScrollView>
       <View>

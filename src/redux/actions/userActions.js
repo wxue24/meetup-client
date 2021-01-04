@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import geohash from "ngeohash";
 
-import { db, auth, functions } from "../../firebase/config";
+import { db, auth, functions, timeStamp } from "../../firebase/config";
 import {
   CLEAR_ERRORS,
   SET_AUTHENTICATED,
@@ -46,15 +46,16 @@ const updatePublicDoc = (data) => {
 };
 
 export const tryLocalLogin = () => async (dispatch) => {
+  AsyncStorage.clear();
   let email = await AsyncStorage.getItem("email");
   let password = await AsyncStorage.getItem("password");
   uid = await AsyncStorage.getItem("uid");
   let user = auth.currentUser;
-  if (user && !uid) {
+  if (user) {
     uid = user.uid;
     dispatch({ type: ADD_USER_DATA, payload: { uid } });
     dispatch({ type: SET_AUTHENTICATED });
-  } else if (!user && email && password) {
+  } else if (email && password) {
     auth
       .signInWithEmailAndPassword(email, password)
       .then(() => {
@@ -65,17 +66,18 @@ export const tryLocalLogin = () => async (dispatch) => {
       .catch((err) => {
         console.log("Local login failed", err.message);
       });
-  } else if (!email && !password) {
-    // TODO: temporary login if AsyncStorage not found
-    auth
-      .signInWithEmailAndPassword("new1@email.com", "password")
-      .then(() => {
-        uid = auth.currentUser.uid;
-        dispatch({ type: SET_AUTHENTICATED });
-        dispatch({ type: ADD_USER_DATA, payload: { uid } });
-      })
-      .catch((err) => console.log(err.message));
-  } else {
+  }
+  // else if (!email && !password) {
+  // TODO: temporary login if AsyncStorage not found
+  // auth
+  //   .signInWithEmailAndPassword("new1@email.com", "password")
+  //   .then(() => {
+  //     uid = auth.currentUser.uid;
+  //     dispatch({ type: SET_AUTHENTICATED });
+  //     dispatch({ type: ADD_USER_DATA, payload: { uid } });
+  //   })
+  //   .catch((err) => console.log(err.message));}
+  else {
     console.log("Email and password not saved locally");
     dispatch({ type: SET_UNAUTHENTICATED });
   }
@@ -101,7 +103,6 @@ export const signup = (email, password, confirmPassword, handle) => async (
   );
   if (!valid) dispatch({ type: SET_ERRORS, payload: errors });
   else {
-    uid;
     return auth
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
@@ -118,25 +119,15 @@ export const signup = (email, password, confirmPassword, handle) => async (
             payload: { handle: "This username is already taken" },
           });
         } else {
-          db.doc(`/users/${uid}`)
-            .set({
-              handle,
-            })
-            .then(() => {
-              db.doc(`/private/${uid}`).set({});
-            })
-            .then(() => {
-              dispatch({ type: CLEAR_ERRORS });
-              // dispatch({ type: SET_AUTHENTICATED });
-              return true;
-            });
+          updatePublicDoc({ handle }).then(() => {
+            dispatch({ type: CLEAR_ERRORS });
+          });
         }
       })
       .catch((err) => {
         console.log(err.message);
         // TODO handle different errors
         dispatch({ type: SET_ERRORS, payload: { general: err.message } });
-        return false;
       });
   }
 };
@@ -215,17 +206,15 @@ export const checkOTP = (phone, OTP) => async (dispatch) => {
 // Adds geohash and coordinates to firestore
 export const addLocation = (latitude, longitude) => async (dispatch) => {
   const hash = geohash.encode(latitude, longitude);
-  return db
-    .collection("private")
-    .doc(uid)
-    .set(
-      {
-        latitude,
-        longitude,
-        geohash: hash,
-      },
-      { merge: true }
-    )
+  const data = {
+    location: {
+      latitude,
+      longitude,
+      geohash: hash,
+    },
+  };
+
+  return updatePrivateDoc(data)
     .then(() => {
       console.log("Successfully added location to database");
       dispatch({ type: CLEAR_ERRORS });
@@ -293,4 +282,92 @@ export const setProfile = (publicData, privateData) => async (dispatch) => {
       });
       dispatch({ type: SET_UNAUTHENTICATED });
     });
+};
+
+export const testAddData = () => async (dispatch) => {
+  await auth.signInWithEmailAndPassword("user2@email.com", "password");
+  const uid = auth.currentUser.uid;
+  //0.015 degrees is 1 mile
+  const latitude = 34.08536481081745;
+  const longitude = -117.75371831638904;
+
+  const userData = {
+    handle: "user2",
+    firstName: "John",
+    school: "Claremont High",
+    grade: 11,
+    lastUpdated: timeStamp.now(),
+    interests: [
+      // Limit 10 if using firebase
+      { name: "Tennis", type: "team_sports", code: "006" },
+      { name: "Soccer", type: "team_sports", code: "001" },
+      { name: "Basketball", type: "team_sports", code: "002" },
+      { name: "Guitar", type: "music", code: "101" },
+      { name: "Piano", type: "music", code: "102" },
+    ],
+    socialMediaHandles: {
+      instagram: "john123",
+    },
+  };
+
+  const notificationData = {
+    type: "friend-req",
+    recipient: "user2",
+    sender: "user3",
+    senderName: "Will",
+    read: false, //true or false
+    createdAt: timeStamp.now(),
+  };
+  const privateData = {
+    email: "user2@email.com",
+    phone: "+12345678901",
+    location: {
+      geoHash: geohash.encode(latitude, longitude),
+      latitude,
+      longitude,
+    },
+    friends: [
+      {
+        name: "Tim",
+        handle: "user1",
+        sharedInterests: ["001", "502"],
+        grade: 11,
+        school: "Claremont High",
+        socialMedia: {
+          instagram: "tim123",
+        },
+      },
+    ],
+    friendRequests: [
+      {
+        sender: "Will",
+        handle: "user3",
+        sharedInterests: ["001", "502"],
+        grade: 11,
+        school: "Claremont High",
+        socialMedia: {
+          instagram: "will123",
+        },
+      },
+    ],
+    filterSettings: {
+      maxGrade: 12,
+      minGrade: 9,
+      sameSchool: "yes",
+      radius: 1, // 1,2,3,4 in miles (0 is any)
+      sharedInterest: "001", //specific interest code in string or null (any)
+    },
+    notificationPreferences: {
+      newFriendRequest: true, // off, on
+      newRecommendations: true, // off, daily
+    },
+  };
+
+  db.collection("users")
+    .doc(uid)
+    .set(userData)
+    .then(() => db.collection("private").doc(uid).set(privateData))
+    .then(() => db.collection("notifications").doc(uid).set(notificationData))
+    .then(() => console.log("success"))
+    .catch((err) => console.log(err));
 };

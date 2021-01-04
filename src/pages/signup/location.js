@@ -24,6 +24,15 @@ const locationScreen = (props) => {
     }
   };
 
+  useEffect(
+    () =>
+      props.navigation.addListener("beforeRemove", (e) => {
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+      }),
+    [props.navigation]
+  );
+
   useEffect(() => {
     const add = async (lat, long) => {
       return await props.addLocation(lat, long);
