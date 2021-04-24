@@ -13,6 +13,7 @@ import resolveAuthScreen from "./src/pages/resolveAuth";
 import editDetails from "./src/pages/editDetails";
 import friendRequests from "./src/pages/friendRequests";
 import friends from "./src/pages/friends";
+import user from "./src/pages/user"
 import loginScreen from "./src/pages/login";
 import match from "./src/pages/match";
 import profile from "./src/pages/profile";
@@ -34,8 +35,8 @@ const FriendsStack = createStackNavigator();
 
 const Home = () => {
   return (
-    <HomeStack.Navigator initialRouteName="Home">
-      <HomeStack.Screen name="Home" component={match} />
+    <HomeStack.Navigator initialRouteName="Matches">
+      <HomeStack.Screen name="Matches" component={match} />
     </HomeStack.Navigator>
   );
 };
@@ -53,7 +54,8 @@ const Friends = () => {
   return (
     <FriendsStack.Navigator initialRouteName="Friends">
       <FriendsStack.Screen name="Friends" component={friends} />
-      <FriendsStack.Screen name="FriendRequests" component={friendRequests} />
+      <FriendsStack.Screen name="Friend Requests" component={friendRequests} />
+      <FriendsStack.Screen name="User" component={user} />
     </FriendsStack.Navigator>
   );
 };
@@ -61,7 +63,7 @@ const Friends = () => {
 const Auth = () => {
   return (
     //TODO initial route name login
-    <AuthStack.Navigator initialRouteName="User Details">
+    <AuthStack.Navigator initialRouteName="Resolve Auth">
       <AuthStack.Screen name="Resolve Auth" component={resolveAuthScreen} />
       <AuthStack.Screen name="Login" component={loginScreen} />
       <AuthStack.Screen name="Signup" component={signupScreen} />
@@ -76,7 +78,7 @@ const Auth = () => {
 const Main = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Friends"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -109,15 +111,15 @@ const AppContainer = () => {
   const auth = useSelector((state) => state.user.authenticated);
   // if auth===true rehydrate state
   return (
-    // <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
-    <NavigationContainer>
-      <Main />
-    </NavigationContainer>
+    <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
+    // <NavigationContainer>
+    //   <Auth />
+    // </NavigationContainer>
   );
 };
 
 export default function App() {
-  return (
+    return (
     <Provider store={store}>
       <AppContainer />
     </Provider>

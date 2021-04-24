@@ -1,12 +1,27 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React, { useEffect } from "react";
+import { View, Text, Pressable } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import Friend from "../components/friends/friend";
+import requests from "../utils/testFriends";
 
-const friendRequests = () => {
+const friendRequestsScreen = (props) => {
+  const renderItem = ({ item }) => {
     return (
-        <View>
-            <Text>Friend Requests</Text>
-        </View>
-    )
-}
+      <Pressable>
+        <Friend data={item} isFriend={false} />
+      </Pressable>
+    );
+  };
 
-export default friendRequests
+  return (
+    <View>
+      <FlatList
+        data={requests}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.handle}
+      />
+    </View>
+  );
+};
+
+export default friendRequestsScreen;

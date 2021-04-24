@@ -12,10 +12,10 @@ const resolveAuth = (props) => {
   }, []);
 
   useEffect(() => {
-    if (authChanged == 0) {
+    if (authChanged === 0) {
       setAuthChanged(authChanged + 1);
     } else {
-      if (!auth) props.navigation.navigate("Location");
+      if (!auth) props.navigation.navigate("Login");
     }
   }, [auth]);
 

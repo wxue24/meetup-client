@@ -3,6 +3,8 @@ import {
   validatePhone,
   checkOTP,
   getInstagramHandle,
+  getUsersWithinRadius,
+  testFunction
 } from "./userActions";
 import { auth } from "../../firebase/config";
 
@@ -103,6 +105,14 @@ describe("Instagram auth actions", () => {
   //   });
   // });
 });
+
+describe("Fetch data actions", () => {
+  test("Gets users within range", async () => {
+    const stuff = testFunction()
+
+    console.log(stuff)
+  })
+})
 
 // describe("Firebase actions", () => {
 

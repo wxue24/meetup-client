@@ -3,7 +3,7 @@
     "name": "meetup",
     "icon": "./src/images/splash.png",
     "slug": "meetup",
-    "scheme": "exp://expo.io/@wxue2020/meetup",
+    "scheme": "meetup",
     "version": "1.0.0",
     "orientation": "portrait",
     "updates": {

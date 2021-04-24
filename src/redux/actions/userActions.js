@@ -13,15 +13,6 @@ import {
 import { validateSignup, validateLogin } from "../../utils/validators";
 
 let uid = "";
-// // *Testing code
-// if (!auth.currentUser) {
-//   auth.signInWithEmailAndPassword("new1@email.com", "password");
-//   uid = auth.currentUser.uid;
-// } else {
-//   uid = auth.currentUser.uid;
-// }
-
-// // *
 
 const updatePrivateDoc = (data) => {
   if (!uid) uid = auth.currentUser.uid;
@@ -45,8 +36,34 @@ const updatePublicDoc = (data) => {
     });
 };
 
+// Calculate the upper and lower boundary geohashes for
+// a given latitude, longitude, and distance in miles
+const getGeohashRange = (
+  latitude,
+  longitude,
+  distance // miles
+) => {
+  const lat = 0.0144927536231884; // degrees latitude per mile
+  const lon = 0.0181818181818182; // degrees longitude per mile
+
+  const lowerLat = latitude - lat * distance;
+  const lowerLon = longitude - lon * distance;
+
+  const upperLat = latitude + lat * distance;
+  const upperLon = longitude + lon * distance;
+
+  const lower = geohash.encode(lowerLat, lowerLon);
+  const upper = geohash.encode(upperLat, upperLon);
+  console.log("hi");
+  console.log(lower, upper);
+  return {
+    lower,
+    upper,
+  };
+};
+
 export const tryLocalLogin = () => async (dispatch) => {
-  AsyncStorage.clear();
+  await auth.signInWithEmailAndPassword("user1@email.com", "password"); //Test code
   let email = await AsyncStorage.getItem("email");
   let password = await AsyncStorage.getItem("password");
   uid = await AsyncStorage.getItem("uid");
@@ -65,19 +82,9 @@ export const tryLocalLogin = () => async (dispatch) => {
       })
       .catch((err) => {
         console.log("Local login failed", err.message);
+        dispatch({ type: SET_UNAUTHENTICATED });
       });
-  }
-  // else if (!email && !password) {
-  // TODO: temporary login if AsyncStorage not found
-  // auth
-  //   .signInWithEmailAndPassword("new1@email.com", "password")
-  //   .then(() => {
-  //     uid = auth.currentUser.uid;
-  //     dispatch({ type: SET_AUTHENTICATED });
-  //     dispatch({ type: ADD_USER_DATA, payload: { uid } });
-  //   })
-  //   .catch((err) => console.log(err.message));}
-  else {
+  } else {
     console.log("Email and password not saved locally");
     dispatch({ type: SET_UNAUTHENTICATED });
   }
@@ -371,3 +378,18 @@ export const testAddData = () => async (dispatch) => {
     .then(() => console.log("success"))
     .catch((err) => console.log(err));
 };
+
+export const getUsersWithinRadius = () => async (dispatch) => {
+  // test data
+  const lat = 34.09536481081745;
+  const lon = -117.74371831638904;
+  const range = getGeohashRange(lat, lon, 10);
+  // Calls firebase function to get closest 200 users
+};
+
+export const testFunction = () => {
+  const lat = 34.09536481081745;
+  const lon = -117.74371831638904;
+  const range = getGeohashRange(lat, lon, 10);
+  return range
+}

@@ -1,76 +1,78 @@
 let db = {
   users: [
     // Doc id is uid
-    { 
-      handle: "user",
+    {
+      handle: "user1",
       firstName: "Tim",
+      avatar: "https://somethign.com",
       school: "Claremont High",
       grade: 11,
-      lastUpdated: "2019-03-15T10:59:52.798Z",
+      lastUpdated: timeStamp.now(),
       interests: [
         // Limit 10 if using firebase
-        { name: "soccer", type: "sports", code: 101 },
-        { name: "board games", type: "other", code: 402 },
+        { name: "soccer", type: "sports", code: "101" },
+        { name: "board games", type: "other", code: "402" },
       ],
       socialMediaHandles: {
-        instagram: "user123",
+        instagram: "tim123",
       },
     },
   ],
   notifications: [
     // Doc id is uid
     {
-      recipient: "user",
-      sender: "john",
-      read: "true | false",
-      createdAt: "2019-03-15T10:59:52.798Z",
+      type: "friend-req",
+      recipient: "user1",
+      sender: "user3",
+      senderName: "John",
+      read: false, //true or false
+      createdAt: timeStamp.now(),
     },
-  ], 
+  ],
   private: [
-    // Doc id is uid
     {
-      email: "new@email.com",
-      phone: "+19099659654",
+      email: "user1@email.com",
+      phone: "+12345678900",
       location: {
         geoHash: "2323fsf43",
-        geoPoint: Geopoint(latitude, longitude),
         latitude: 13.342352,
-        longitude: 12.33532
+        longitude: 12.33532,
       },
       friends: [
         {
-          name: "john",
-          handle: "john123",
-          sharedInterests: ["soccer", "cooking"],
+          name: "John",
+          handle: "user2",
+          sharedInterests: ["001", "502"],
           grade: 11,
           school: "Claremont High",
           socialMedia: {
             instagram: "john123",
           },
-        }
+        },
       ],
       friendRequests: [
         {
-          sender: "john",
-          sharedInterests: ["soccer", "cooking"],
+          sender: "Will",
+          handle: "user3",
+          sharedInterests: ["001", "502"],
           grade: 11,
           school: "Claremont High",
           socialMedia: {
-            instagram: "john123",
+            instagram: "will123",
           },
-        }
+        },
       ],
       filterSettings: {
         maxGrade: 12,
         minGrade: 10,
-        sameSchool: "yes | any | no",
+        sameSchool: "yes",
         radius: 2, // 1,2,3,4 in miles (0 is any)
-        sharedInterest: { name: "soccer", type: "sports" } | null, //specific interest or any
+        sharedInterest: { code: "001" } | null, //specific interest or any
       },
       notificationPreferences: {
         newFriendRequest: true, // off, on
         newRecommendations: true, // off, daily
-      }
+      },
     },
   ],
 };
