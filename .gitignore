@@ -13,4 +13,4 @@ web-build/
 .DS_Store
 
 # Env variables
-src/firebase/config.js
+src/firebase/firebaseConfig.js
