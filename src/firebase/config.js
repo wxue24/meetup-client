@@ -1,8 +1,8 @@
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
+import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
-import "firebase/auth";
-import firebaseConfig from "./firebaseConfig"
+import { firebaseConfig } from "./firebaseConfig";
 
 let app;
 if (!firebase.apps.length) {
