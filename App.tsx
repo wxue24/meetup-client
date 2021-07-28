@@ -23,9 +23,13 @@ import location from "./src/pages/signup/location";
 import socialMedia from "./src/pages/signup/socialMedia";
 import userDetails from "./src/pages/signup/userDetails";
 import { LogBox } from "react-native";
+import { useAppSelector } from "./src/redux/hooks";
+
 
 //TODO ignoring warning
 LogBox.ignoreLogs(["Setting a timer"]);
+
+type featherIconName = keyof typeof Feather.glyphMap;
 
 const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -81,10 +85,11 @@ const Main = () => {
       initialRouteName="Friends"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === "Home") iconName = "home";
-          else if (route.name === "Profile") iconName = "settings";
-          else if (route.name === "Friends") iconName = "users";
+          let iconName: featherIconName = "help-circle";
+          
+          if(route.name == "Home") iconName = "home";
+          else if(route.name == "Profile") iconName = "settings";
+          else if(route.name == "Friends") iconName = "users";
 
           return <Feather name={iconName} size={size} color={color} />;
         },
@@ -108,7 +113,7 @@ const Main = () => {
 
 const AppContainer = () => {
   //TODO: This could be causing use to hit login button twice
-  const auth = useSelector((state) => state.user.authenticated);
+  const auth = useAppSelector((state) => state.user.authenticated);
   // if auth===true rehydrate state
   return (
     <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>

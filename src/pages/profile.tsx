@@ -10,7 +10,7 @@ const profile = () => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   filterSettings: state.filterSettings,
   firstName: state.firstName,
   grade: state.grade,

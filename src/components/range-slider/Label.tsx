@@ -1,7 +1,11 @@
 import React, { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const Label = ({ text, ...restProps }) => {
+interface Props {
+  text: string;
+  restProps: any;
+}
+const Label = ({ text, ...restProps }: Props) => {
   return (
     <View style={styles.root} {...restProps}>
       <Text style={styles.text}>{text}</Text>

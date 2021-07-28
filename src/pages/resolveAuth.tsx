@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { tryLocalLogin } from "../redux/actions/userActions";
-import { useSelector, connect } from "react-redux";
+import { connect } from "react-redux";
 import Loading from "../components/Loading";
+import { useAppSelector } from "../redux/hooks";
 
-const resolveAuth = (props) => {
-  const auth = useSelector((state) => state.user.authenticated);
+
+interface Props {
+  tryLocalLogin: () => void;
+  navigation: any;
+}
+const resolveAuth = ({tryLocalLogin, navigation}: Props) => {
+  const auth = useAppSelector((state) => state.user.authenticated);
   const [authChanged, setAuthChanged] = useState(0);
 
   useEffect(() => {
-    props.tryLocalLogin();
+    tryLocalLogin();
   }, []);
 
   useEffect(() => {
     if (authChanged === 0) {
       setAuthChanged(authChanged + 1);
     } else {
-      if (!auth) props.navigation.navigate("Login");
+      if (!auth) navigation.navigate("Login");
     }
   }, [auth]);
 

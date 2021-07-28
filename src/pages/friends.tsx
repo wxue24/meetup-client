@@ -4,16 +4,18 @@ import { View, Text, Pressable } from "react-native";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import Friend from "../components/friends/friend";
 import ViewFriendRequests from "../components/friends/viewFriendRequests";
+
 import friends from "../utils/testFriends";
 
-const friendsScreen = (props) => {
-  const viewFriend = (handle) => {
-    props.navigation.navigate("User", {
+//TODO implement typing for react navigation
+const friendsScreen = ({ navigation }: any) => {
+  const viewFriend = (handle: string) => {
+    navigation.navigate("User", {
       handle,
     });
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: any) => {
     return (
       <Pressable onPress={() => viewFriend(item.handle)}>
         <Friend
@@ -29,7 +31,7 @@ const friendsScreen = (props) => {
     <View>
       <Pressable
         onPress={() => {
-          props.navigation.navigate("Friend Requests");
+          navigation.navigate("Friend Requests");
         }}
       >
         <ViewFriendRequests />

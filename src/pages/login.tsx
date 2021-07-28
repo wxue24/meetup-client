@@ -7,12 +7,16 @@ import Loading from "../components/Loading";
 import { connect } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 
-const loginScreen = (props) => {
+interface Props {
+  login: (email: string, password: string) => void;
+  errors: loginErrors;
+}
+const loginScreen = ({ login, errors }: Props) => {
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async ({ email, password }) => {
+  const handleSubmit = async ({ email, password }: loginData) => {
     setLoading(true);
-    await props.login(email, password);
+    await login(email, password);
     setLoading(false);
   };
 
@@ -21,7 +25,7 @@ const loginScreen = (props) => {
       <LoginForm
         signup={false}
         headerText="Welcome back"
-        errors={props.errors}
+        errors={errors}
         submitButtonText="Login"
         onSubmit={handleSubmit}
       />
@@ -35,7 +39,8 @@ const loginScreen = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+//TODO add typing for redux state
+const mapStateToProps = (state: any) => ({
   authenticated: state.user.authenticated,
   errors: state.user.errors,
 });

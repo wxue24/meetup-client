@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Text, View, TextInput, Button, Modal } from "react-native";
 import { styles } from "../styles/basicStyles";
+// @ts-ignore
 import RadioButton from "radio-buttons-react-native";
+// @ts-ignore
 import CheckBox from "react-native-check-box";
+// @ts-ignore
 import RangeSlider from "rn-range-slider";
+// @ts-ignore
 import ToggleBtn from "react-native-flip-toggle-button";
 import { ScrollView } from "react-native-gesture-handler";
 import { Picker } from "@react-native-picker/picker";
@@ -27,31 +31,59 @@ const radioButtonSchool = [
   { label: "Recommend from any school", data: "any" },
 ];
 
-const isEmpty = (string) => {
-  return string.trim() === "";
+const isEmpty = (str: string) => {
+  return str.trim() === "";
 };
 
-const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
+interface Props {
+  setProfile: (pub: Public, priv: Private) => void;
+  navigate: () => void;
+  generalErrors: Error[];
+}
+
+interface Public {
+  firstName: string;
+  grade: number;
+  school: string;
+  interests: Interest[];
+}
+
+interface Private {
+  filterSettings: PrivateData["filterSettings"];
+  notificationPreferences: PrivateData["notificationPreferences"];
+}
+
+interface Error {
+  field?: string;
+  message?: string;
+}
+
+const ProfileForm = ({ setProfile, navigate, generalErrors }: Props) => {
   const [firstName, setFirstName] = useState("");
   const [grade, setGrade] = useState(0);
   const [school, setSchool] = useState("");
-  const [interests, setInterests] = useState([]);
-  const [filterSettings, setFilterSettings] = useState({
+  const [interests, setInterests] = useState<Interest[]>([]);
+  const [filterSettings, setFilterSettings] = useState<
+    PrivateData["filterSettings"]
+  >({
     minGrade: 9,
     maxGrade: 12,
+    sameSchool: "yes",
+    radius: 0,
+    sharedInterest: null,
   });
   const [notificationPreferences, setNotificationPreferences] = useState({
     newFriendRequest: true,
     newRecommendations: true,
   });
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState<Error[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   // Component states
   const [pickerInterestVal, setPickerInterestVal] = useState(
     interests.length ? interests[0].code : ""
   );
-  const [pickerRadiusVal, setPickerRadiusVal] = useState(1);
+  const [pickerRadiusVal, setPickerRadiusVal] = useState<0 | 1 | 2 | 3 | 4>(0);
 
   // Range slider for grade preference
   const renderThumb = useCallback(() => <Thumb />, []);
@@ -69,11 +101,11 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
   }, []);
 
   // Gets error message for specific field
-  const isError = (errorField) => {
+  const isError = (errorField: string) => {
     return errors.find((e) => e.field === errorField) ? true : false;
   };
-  const getErrorMessage = (errorField) => {
-    return errors.find((e) => e.field === errorField).message;
+  const getErrorMessage = (errorField: string) => {
+    return errors?.find((e) => e.field === errorField)?.message;
   };
 
   const validateData = () => {
@@ -144,24 +176,22 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
     await setProfile(publicData, privateData);
     if (!generalErrors) navigate();
     else {
-      let gErrors = [];
+      let gErrors: Error[] = [];
       for (const [key, value] of Object.entries(generalErrors)) {
-        gErrors.push({ message: value });
+        gErrors.push({ message: value.message });
       }
       setErrors(gErrors);
     }
   };
 
   useEffect(() => {
-    if(errors.length > 0){
-      setModalVisible(true)
+    if (errors.length > 0) {
+      setModalVisible(true);
     } else {
-      setModalVisible(false)
+      setModalVisible(false);
     }
     // console.log(errors);
   }, [errors]);
-
-  
 
   return (
     <ScrollView>
@@ -199,7 +229,7 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
         <RadioButton
           style={styles.input}
           data={radioButtonGrades}
-          selectedBtn={(b) => setGrade(b.label)}
+          selectedBtn={(b: { label: Grade }) => setGrade(b.label)}
         />
 
         <Text>Interests</Text>
@@ -268,7 +298,7 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
           ) : null}
           <RadioButton
             data={radioButtonSchool}
-            selectedBtn={(b) =>
+            selectedBtn={(b: { data: "yes" | "no" | "any" }) =>
               setFilterSettings({ ...filterSettings, sameSchool: b.data })
             }
           />
@@ -328,7 +358,7 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
             onLabel={"On"}
             offLabel={"Off"}
             labelStyle={{ color: "white" }}
-            onToggle={(newState) =>
+            onToggle={(newState: boolean) =>
               setNotificationPreferences({
                 ...notificationPreferences,
                 newFriendRequest: newState,
@@ -345,7 +375,7 @@ const ProfileForm = ({ setProfile, navigate, generalErrors }) => {
             onLabel={"Daily"}
             offLabel={"Off"}
             labelStyle={{ color: "white" }}
-            onToggle={(newState) =>
+            onToggle={(newState: boolean) =>
               setNotificationPreferences({
                 ...notificationPreferences,
                 newRecommendations: newState,

@@ -2,7 +2,11 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import UserProfile from "../components/UserProfile";
 
-const userScreen = ({ route }) => {
+interface Props {
+  route: any;
+}
+
+const userScreen = ({ route }: Props) => {
   const { handle } = route.params;
 
   useEffect(() => {

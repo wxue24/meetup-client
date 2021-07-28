@@ -9,10 +9,15 @@ import {
   Right,
   Button,
 } from "native-base";
+// @ts-ignore
 import UserAvatar from "react-native-user-avatar";
 
-
-const friend = ({ data, isFriend, navigateToUser }) => {
+interface Props {
+  data: FriendData;
+  isFriend: boolean;
+  navigateToUser: () => void;
+}
+const friend = ({data, isFriend, navigateToUser}: Props) => {
   const removeFriend = () => {};
 
   const addFriend = () => {};
@@ -27,12 +32,12 @@ const friend = ({ data, isFriend, navigateToUser }) => {
         <Left>
           <UserAvatar
             size={100}
-            name={data.name}
+            name={data.firstName}
             src={data.avatar}
           />
-          <Thumbnail source={data.avatar} />
+          <Thumbnail source={{uri: data.avatar}} />
           <Body>
-            <Text>{data.name}</Text>
+            <Text>{data.firstName}</Text>
             <Text>{data.handle}</Text>
           </Body>
         </Left>

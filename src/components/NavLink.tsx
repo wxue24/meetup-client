@@ -2,7 +2,13 @@ import React from "react";
 import { Text, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const NavLink = ({ text, routeName, onPress }) => {
+interface Props {
+  text: string;
+  routeName: string;
+  onPress: () => void;
+}
+
+const NavLink = ({ text, routeName, onPress }: Props) => {
   const navigation = useNavigation();
   return (
     <>

@@ -2,13 +2,28 @@ import React, { useState } from "react";
 import { Text, View, TextInput, Button } from "react-native";
 import { styles } from "../styles/basicStyles";
 
+interface Props {
+  headerText: string;
+  errors?: signupErrors & { general?: string };
+  submitButtonText: string;
+  onSubmit: (data: submitInfo) => void;
+  signup: boolean;
+}
+
+interface submitInfo {
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  handle?: string;
+}
+
 const LoginForm = ({
   headerText,
   errors,
   submitButtonText,
   onSubmit,
   signup,
-}) => {
+}: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -77,7 +92,7 @@ const LoginForm = ({
       <Button
         title={submitButtonText}
         onPress={() => {
-          let submitInfo = { email, password };
+          let submitInfo: submitInfo = { email, password };
           if (signup) submitInfo = { ...submitInfo, confirmPassword, handle };
           return onSubmit(submitInfo);
         }}

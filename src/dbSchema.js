@@ -38,9 +38,9 @@ let db = {
         latitude: 13.342352,
         longitude: 12.33532,
       },
-      friends: [
+      friends: [ 
         {
-          name: "John",
+          firstName: "John",
           handle: "user2",
           sharedInterests: ["001", "502"],
           grade: 11,
@@ -52,7 +52,7 @@ let db = {
       ],
       friendRequests: [
         {
-          sender: "Will",
+          firstName: "Will",
           handle: "user3",
           sharedInterests: ["001", "502"],
           grade: 11,
