@@ -10,10 +10,10 @@ if (!firebase.apps.length) {
 }
 
 const db = app.firestore();
-db.settings({
-  host: "192.168.68.109:8080",
-  ssl: false,
-});
+// db.settings({
+//   host: "192.168.68.109:8080",
+//   ssl: false,
+// });
 const timeStamp = firebase.firestore.Timestamp;
 
 const auth = app.auth();

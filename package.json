@@ -31,7 +31,7 @@
     "expo-random": "~11.2.0",
     "expo-status-bar": "~1.0.4",
     "expo-web-browser": "~9.2.0",
-    "firebase": "^7.9.0",
+    "firebase": "8.2.3",
     "native-base": "^2.15.2",
     "ngeohash": "^0.6.3",
     "prop-types": "^15.7.2",
