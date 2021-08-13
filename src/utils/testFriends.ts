@@ -2,7 +2,8 @@ const friends: FriendData[] = [
   {
     firstName: "John",
     handle: "user1",
-    avatar: "../assets/pictures/biden.jpg",
+    avatar:
+      "https://assets2.rappler.com/2020/11/1604332770-afp-20201030-joe-biden-profile.jpg",
     sharedInterests: ["001", "502"],
     grade: 11,
     school: "Claremont High",
@@ -13,7 +14,8 @@ const friends: FriendData[] = [
   {
     firstName: "Jacob",
     handle: "user2",
-    avatar: "../assets/pictures/biden.jpg",
+    avatar:
+      "https://assets2.rappler.com/2020/11/1604332770-afp-20201030-joe-biden-profile.jpg",
     sharedInterests: ["001", "502"],
     grade: 11,
     school: "Claremont High",
@@ -24,7 +26,8 @@ const friends: FriendData[] = [
   {
     firstName: "Daniel",
     handle: "user3",
-    avatar: "../assets/pictures/biden.jpg",
+    avatar:
+      "https://assets2.rappler.com/2020/11/1604332770-afp-20201030-joe-biden-profile.jpg",
     sharedInterests: ["001", "502"],
     grade: 11,
     school: "Claremont High",
@@ -35,7 +38,8 @@ const friends: FriendData[] = [
   {
     firstName: "Bob",
     handle: "user4",
-    avatar: "../assets/pictures/trump.jpg",
+    avatar:
+      "https://assets2.rappler.com/2020/11/1604332770-afp-20201030-joe-biden-profile.jpg",
     sharedInterests: ["001", "502"],
     grade: 11,
     school: "Claremont High",

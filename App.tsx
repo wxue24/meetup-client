@@ -13,7 +13,7 @@ import resolveAuthScreen from "./src/pages/resolveAuth";
 import editDetails from "./src/pages/editDetails";
 import friendRequests from "./src/pages/friendRequests";
 import friends from "./src/pages/friends";
-import user from "./src/pages/user"
+import user from "./src/pages/user";
 import loginScreen from "./src/pages/login";
 import match from "./src/pages/match";
 import profile from "./src/pages/profile";
@@ -24,7 +24,6 @@ import socialMedia from "./src/pages/signup/socialMedia";
 import userDetails from "./src/pages/signup/userDetails";
 import { LogBox } from "react-native";
 import { useAppSelector } from "./src/redux/hooks";
-
 
 //TODO ignoring warning
 LogBox.ignoreLogs(["Setting a timer"]);
@@ -64,17 +63,20 @@ const Friends = () => {
   );
 };
 
-const Auth = () => {
+interface AuthProps {
+  signedOut?: boolean;
+}
+const Auth = ({ signedOut }: AuthProps) => {
   return (
     //TODO initial route name login
-    <AuthStack.Navigator initialRouteName="Resolve Auth">
-      <AuthStack.Screen name="Resolve Auth" component={resolveAuthScreen} />
+    <AuthStack.Navigator initialRouteName={signedOut ? "Login" : "ResolveAuth"}>
+      <AuthStack.Screen name="ResolveAuth" component={resolveAuthScreen} />
       <AuthStack.Screen name="Login" component={loginScreen} />
       <AuthStack.Screen name="Signup" component={signupScreen} />
       <AuthStack.Screen name="Phone" component={phone} />
       <AuthStack.Screen name="Location" component={location} />
-      <AuthStack.Screen name="Social Media" component={socialMedia} />
-      <AuthStack.Screen name="User Details" component={userDetails} />
+      <AuthStack.Screen name="SocialMedia" component={socialMedia} />
+      <AuthStack.Screen name="UserDetails" component={userDetails} />
     </AuthStack.Navigator>
   );
 };
@@ -86,10 +88,10 @@ const Main = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName: featherIconName = "help-circle";
-          
-          if(route.name == "Home") iconName = "home";
-          else if(route.name == "Profile") iconName = "settings";
-          else if(route.name == "Friends") iconName = "users";
+
+          if (route.name == "Home") iconName = "home";
+          else if (route.name == "Profile") iconName = "settings";
+          else if (route.name == "Friends") iconName = "users";
 
           return <Feather name={iconName} size={size} color={color} />;
         },
@@ -116,7 +118,9 @@ const AppContainer = () => {
   const auth = useAppSelector((state) => state.user.authenticated);
   // if auth===true rehydrate state
   return (
-    <NavigationContainer>{auth ? <Main /> : <Auth />}</NavigationContainer>
+    <NavigationContainer>
+      {auth ? <Main /> : auth == false ? <Auth signedOut={true} /> : <Auth />}
+    </NavigationContainer>
     // <NavigationContainer>
     //   <Auth />
     // </NavigationContainer>
@@ -124,7 +128,7 @@ const AppContainer = () => {
 };
 
 export default function App() {
-    return (
+  return (
     <Provider store={store}>
       <AppContainer />
     </Provider>

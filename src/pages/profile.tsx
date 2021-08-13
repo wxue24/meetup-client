@@ -1,24 +1,23 @@
+import { Button } from "native-base";
 import React from "react";
 import { View, Text } from "react-native";
-import { connect } from "react-redux";
+import { signOut } from "../redux/actions/userActions";
+import { useAppDispatch } from "../redux/hooks";
 
 const profile = () => {
+  const dispatch = useAppDispatch();
+
   return (
     <View>
-      <Text>Profile</Text>
+      <Button
+        onPress={() => {
+          dispatch(signOut());
+        }}
+      >
+        <Text>Sign out</Text>
+      </Button>
     </View>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  filterSettings: state.filterSettings,
-  firstName: state.firstName,
-  grade: state.grade,
-  handle: state.handle,
-  interests: state.interests,
-  school: state.school,
-  location: state.location,
-  socialMediaHandles: state.socialMediaHandles,
-});
-
-export default connect(mapStateToProps)(profile);
+export default profile;

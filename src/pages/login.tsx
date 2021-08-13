@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { login, switchAuthScreen } from "../redux/actions/userActions";
+import { login } from "../redux/actions/userActions";
 import LoginForm from "../components/LoginForm";
 import NavLink from "../components/NavLink";
 import Loading from "../components/Loading";
 import { connect } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
+import { useAppDispatch } from "../redux/hooks";
 
 interface Props {
-  login: (email: string, password: string) => void;
   errors: loginErrors;
 }
-const loginScreen = ({ login, errors }: Props) => {
+const loginScreen = ({ errors }: Props) => {
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async ({ email, password }: loginData) => {
     setLoading(true);
-    await login(email, password);
+    await dispatch(login(email, password));
     setLoading(false);
   };
 
@@ -32,22 +33,11 @@ const loginScreen = ({ login, errors }: Props) => {
       <NavLink
         text="Don't have an account? Signup"
         routeName="Signup"
-        onPress={switchAuthScreen}
+        onPress={() => {}} //TODO Switch to signup
       />
       <Loading animating={loading} />
     </View>
   );
 };
 
-//TODO add typing for redux state
-const mapStateToProps = (state: any) => ({
-  authenticated: state.user.authenticated,
-  errors: state.user.errors,
-});
-
-const mapDispatchToProps = {
-  login,
-  switchAuthScreen,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(loginScreen);
+export default loginScreen;

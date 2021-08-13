@@ -1,35 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { tryLocalLogin } from "../redux/actions/userActions";
-import { connect } from "react-redux";
 import Loading from "../components/Loading";
-import { useAppSelector } from "../redux/hooks";
-
+import { useAppSelector, useAppDispatch } from "../redux/hooks";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 interface Props {
-  tryLocalLogin: () => void;
   navigation: any;
 }
-const resolveAuth = ({tryLocalLogin, navigation}: Props) => {
+const resolveAuth = ({ navigation }: Props) => {
   const auth = useAppSelector((state) => state.user.authenticated);
-  const [authChanged, setAuthChanged] = useState(0);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    tryLocalLogin();
+    dispatch(tryLocalLogin());
   }, []);
 
   useEffect(() => {
-    if (authChanged === 0) {
-      setAuthChanged(authChanged + 1);
-    } else {
-      if (!auth) navigation.navigate("Login");
+    if (auth == false) {
+      console.log("auth:", auth);
+      navigation.navigate("Login");
     }
   }, [auth]);
 
   return <Loading animating={true} />;
 };
 
-const mapDispatchToProps = {
-  tryLocalLogin,
-};
-
-export default connect(null, mapDispatchToProps)(resolveAuth);
+export default resolveAuth;

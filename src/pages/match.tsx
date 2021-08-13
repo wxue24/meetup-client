@@ -23,11 +23,7 @@ const match = () => {
       <Text>Closest</Text>
       <MatchSwipe data={testMatchSwiperData} />
       <Text>Search by Interest (TODO implement)</Text>
-      <Tabs
-        renderTabBar={() => (
-          <ScrollableTab tabStyle={{ backgroundColor: "red" }} />
-        )}
-      >
+      <Tabs renderTabBar={() => <ScrollableTab />}>
         {interests.map((item) => {
           return (
             <Tab heading={item.name} key={item.name}>
@@ -35,6 +31,7 @@ const match = () => {
             </Tab>
           );
         })}
+
       </Tabs>
     </ScrollView>
   );

@@ -3,7 +3,8 @@ const data: PublicData[] = [
     firstName: "Donald",
     lastName: "Trump",
     handle: "trump123",
-    avatar: "../../assets/pictures/trump.jpg",
+    avatar:
+      "https://assets2.rappler.com/2020/11/1604332770-afp-20201030-joe-biden-profile.jpg",
     grade: 11,
     school: "Claremont High",
     interests: [
@@ -19,7 +20,8 @@ const data: PublicData[] = [
     firstName: "Joe",
     lastName: "Biden",
     handle: "biden123",
-    avatar: "../../assets/pictures/biden.jpg",
+    avatar:
+      "https://assets2.rappler.com/2020/11/1604332770-afp-20201030-joe-biden-profile.jpg",
     grade: 11,
     school: "Pomona High",
     interests: [
